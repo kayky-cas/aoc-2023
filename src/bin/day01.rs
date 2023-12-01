@@ -26,19 +26,24 @@ fn part2(input: &str) -> usize {
             'out: for i in 0..line.len() {
                 for j in i..line.len() {
                     let sl = &line[i..=j];
-                    if sl.len() == 1 {
-                        let ch = sl.chars().next().unwrap();
-                        if ch.is_digit(10) {
-                            first = Some(ch);
-                            break 'out;
-                        }
-                    }
 
-                    if let Some(pos) = table.iter().position(|&x| x == sl) {
-                        let ch = char::from_digit((pos + 1) as u32, 10).unwrap();
-                        first = Some(ch);
-                        break 'out;
-                    }
+                    match sl.len() {
+                        6.. => continue 'out,
+                        1 => {
+                            let ch = sl.chars().next().unwrap();
+                            if ch.is_digit(10) {
+                                first = Some(ch);
+                                break 'out;
+                            }
+                        }
+                        _ => {
+                            if let Some(pos) = table.iter().position(|&x| x == sl) {
+                                let ch = char::from_digit((pos + 1) as u32, 10).unwrap();
+                                first = Some(ch);
+                                break 'out;
+                            }
+                        }
+                    };
                 }
             }
 
@@ -47,19 +52,24 @@ fn part2(input: &str) -> usize {
             'out: for i in (0..line.len()).rev() {
                 for j in (0..=i).rev() {
                     let sl = &line[j..=i];
-                    if sl.len() == 1 {
-                        let ch = sl.chars().next().unwrap();
-                        if ch.is_digit(10) {
-                            last = Some(ch);
-                            break 'out;
-                        }
-                    }
 
-                    if let Some(pos) = table.iter().position(|&x| x == sl) {
-                        let ch = char::from_digit((pos + 1) as u32, 10).unwrap();
-                        last = Some(ch);
-                        break 'out;
-                    }
+                    match sl.len() {
+                        6.. => continue 'out,
+                        1 => {
+                            let ch = sl.chars().next().unwrap();
+                            if ch.is_digit(10) {
+                                last = Some(ch);
+                                break 'out;
+                            }
+                        }
+                        _ => {
+                            if let Some(pos) = table.iter().position(|&x| x == sl) {
+                                let ch = char::from_digit((pos + 1) as u32, 10).unwrap();
+                                last = Some(ch);
+                                break 'out;
+                            }
+                        }
+                    };
                 }
             }
 
