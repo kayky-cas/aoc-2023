@@ -38,8 +38,7 @@ fn part2(input: &str) -> usize {
                         }
                         _ => {
                             if let Some(pos) = table.iter().position(|&x| x == sl) {
-                                let ch = char::from_digit((pos + 1) as u32, 10).unwrap();
-                                first = Some(ch);
+                                first = char::from_digit((pos + 1) as u32, 10);
                                 break 'out;
                             }
                         }
