@@ -13,6 +13,27 @@ fn part1(input: &str) -> usize {
         .sum()
 }
 
+fn part2_handle(sl: &str, table: &[&str]) -> Option<char> {
+    match sl.len() {
+        6.. => None,
+        1 => {
+            let ch = sl.chars().next().unwrap();
+            if ch.is_digit(10) {
+                Some(ch)
+            } else {
+                None
+            }
+        }
+        _ => {
+            if let Some(pos) = table.iter().position(|&x| x == sl) {
+                Some(char::from_digit((pos + 1) as u32, 10).unwrap())
+            } else {
+                None
+            }
+        }
+    }
+}
+
 fn part2(input: &str) -> usize {
     let table = [
         "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
@@ -21,59 +42,34 @@ fn part2(input: &str) -> usize {
     input
         .lines()
         .map(|line| {
-            let mut first = None;
+            let mut first = '\0';
 
             'out: for i in 0..line.len() {
                 for j in i..line.len() {
                     let sl = &line[i..=j];
 
-                    match sl.len() {
-                        6.. => continue 'out,
-                        1 => {
-                            let ch = sl.chars().next().unwrap();
-                            if ch.is_digit(10) {
-                                first = Some(ch);
-                                break 'out;
-                            }
-                        }
-                        _ => {
-                            if let Some(pos) = table.iter().position(|&x| x == sl) {
-                                first = char::from_digit((pos + 1) as u32, 10);
-                                break 'out;
-                            }
-                        }
-                    };
+                    if let Some(ch) = part2_handle(sl, &table) {
+                        first = ch;
+                        break 'out;
+                    }
                 }
             }
 
-            let mut last = None;
+            let mut last = '\0';
 
             'out: for i in (0..line.len()).rev() {
                 for j in (0..=i).rev() {
                     let sl = &line[j..=i];
 
-                    match sl.len() {
-                        6.. => continue 'out,
-                        1 => {
-                            let ch = sl.chars().next().unwrap();
-                            if ch.is_digit(10) {
-                                last = Some(ch);
-                                break 'out;
-                            }
-                        }
-                        _ => {
-                            if let Some(pos) = table.iter().position(|&x| x == sl) {
-                                let ch = char::from_digit((pos + 1) as u32, 10).unwrap();
-                                last = Some(ch);
-                                break 'out;
-                            }
-                        }
-                    };
+                    if let Some(ch) = part2_handle(sl, &table) {
+                        last = ch;
+                        break 'out;
+                    }
                 }
             }
 
-            let mut number = String::from(first.unwrap());
-            number.push(last.unwrap());
+            let mut number = String::from(first);
+            number.push(last);
 
             number.parse::<usize>().unwrap()
         })
