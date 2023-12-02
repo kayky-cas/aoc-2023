@@ -1,3 +1,3 @@
 # Advent of Code 2023
 
-- 2/50 stars
+- 4/50 stars
