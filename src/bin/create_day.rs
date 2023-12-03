@@ -65,4 +65,15 @@ mod tests {{
         .unwrap();
 
     println!("Created {}", path);
+
+    let path = format!("input/day{:02}.aoc", day);
+
+    let _ = std::fs::File::create(&path)
+        .map_err(|e| {
+            eprintln!("Failed to create file: {}", e);
+            std::process::exit(1);
+        })
+        .unwrap();
+
+    println!("Created {}", path);
 }
