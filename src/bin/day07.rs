@@ -1,7 +1,7 @@
 use std::{cmp::Ordering, collections::HashMap};
 
-struct Game {
-    hand: Vec<char>,
+struct Hand {
+    cards: Vec<char>,
     bid: usize,
     stats: Stats,
 }
@@ -38,11 +38,7 @@ fn part1(input: &str) -> usize {
 
             let stats = Stats { max: *max, len };
 
-            Game {
-                hand: cards,
-                bid,
-                stats,
-            }
+            Hand { cards, bid, stats }
         })
         .collect();
 
@@ -57,7 +53,7 @@ fn part1(input: &str) -> usize {
             ord => return ord,
         };
 
-        for (card_a, card_b) in a.hand.iter().zip(b.hand.iter()) {
+        for (card_a, card_b) in a.cards.iter().zip(b.cards.iter()) {
             let a = points.iter().position(|card| *card == *card_a);
             let b = points.iter().position(|card| *card == *card_b);
 
@@ -110,11 +106,7 @@ fn part2(input: &str) -> usize {
 
             let stats = Stats { max, len };
 
-            Game {
-                hand: cards,
-                bid,
-                stats,
-            }
+            Hand { cards, bid, stats }
         })
         .collect();
 
@@ -129,7 +121,7 @@ fn part2(input: &str) -> usize {
             ord => return ord,
         };
 
-        for (card_a, card_b) in a.hand.iter().zip(b.hand.iter()) {
+        for (card_a, card_b) in a.cards.iter().zip(b.cards.iter()) {
             let a = points.iter().position(|card| *card == *card_a);
             let b = points.iter().position(|card| *card == *card_b);
 
