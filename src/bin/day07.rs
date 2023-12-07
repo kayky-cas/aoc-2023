@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{cmp::Ordering, collections::HashMap};
 
 fn part1(input: &str) -> usize {
     let points = [
@@ -40,12 +40,12 @@ fn part1(input: &str) -> usize {
         let max_b = b_map.values().max();
 
         match max_a.cmp(&max_b) {
-            std::cmp::Ordering::Equal => {}
+            Ordering::Equal => {}
             ord => return ord,
         };
 
         match b_map.len().cmp(&a_map.len()) {
-            std::cmp::Ordering::Equal => {}
+            Ordering::Equal => {}
             ord => return ord,
         };
 
@@ -54,12 +54,12 @@ fn part1(input: &str) -> usize {
             let b = points.iter().position(|card| *card == *card_b);
 
             match b.cmp(&a) {
-                std::cmp::Ordering::Equal => {}
+                Ordering::Equal => {}
                 ord => return ord,
             };
         }
 
-        std::cmp::Ordering::Equal
+        Ordering::Equal
     });
 
     game.iter()
@@ -121,7 +121,7 @@ fn part2(input: &str) -> usize {
             + *b_map.get(&'J').unwrap_or(&0);
 
         match max_a.cmp(&max_b) {
-            std::cmp::Ordering::Equal => {}
+            Ordering::Equal => {}
             ord => return ord,
         };
 
@@ -129,7 +129,7 @@ fn part2(input: &str) -> usize {
         let b_len = b_map.iter().filter(|(&card, _)| card != 'J').count().max(1);
 
         match b_len.cmp(&a_len) {
-            std::cmp::Ordering::Equal => {}
+            Ordering::Equal => {}
             ord => return ord,
         };
 
@@ -138,12 +138,12 @@ fn part2(input: &str) -> usize {
             let b = points.iter().position(|card| *card == *card_b);
 
             match b.cmp(&a) {
-                std::cmp::Ordering::Equal => {}
+                Ordering::Equal => {}
                 ord => return ord,
             };
         }
 
-        std::cmp::Ordering::Equal
+        Ordering::Equal
     });
 
     game.iter()
