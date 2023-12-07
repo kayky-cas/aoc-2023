@@ -21,17 +21,21 @@ fn part1(input: &str) -> usize {
         .map(|line| {
             let (hand, bid) = line.trim().split_once(' ').unwrap();
             let bid: usize = bid.parse().unwrap();
-            let cards: Vec<char> = hand.chars().collect();
 
-            let map = hand.chars().fold(HashMap::new(), |mut acc, card| {
-                if let Some(count) = acc.get(&card) {
-                    acc.insert(card, count + 1);
-                } else {
-                    acc.insert(card, 1);
-                }
+            let (cards, map) = hand.chars().fold(
+                (Vec::new(), HashMap::new()),
+                |(mut cards, mut map), card| {
+                    if let Some(count) = map.get(&card) {
+                        map.insert(card, count + 1);
+                    } else {
+                        map.insert(card, 1);
+                    }
 
-                acc
-            });
+                    cards.push(card);
+
+                    (cards, map)
+                },
+            );
 
             let max = map.values().max().unwrap_or(&0);
             let len = map.len();
@@ -82,17 +86,21 @@ fn part2(input: &str) -> usize {
         .map(|line| {
             let (hand, bid) = line.trim().split_once(' ').unwrap();
             let bid: usize = bid.parse().unwrap();
-            let cards: Vec<char> = hand.chars().collect();
 
-            let map = hand.chars().fold(HashMap::new(), |mut acc, card| {
-                if let Some(count) = acc.get(&card) {
-                    acc.insert(card, count + 1);
-                } else {
-                    acc.insert(card, 1);
-                }
+            let (cards, map) = hand.chars().fold(
+                (Vec::new(), HashMap::new()),
+                |(mut cards, mut map), card| {
+                    if let Some(count) = map.get(&card) {
+                        map.insert(card, count + 1);
+                    } else {
+                        map.insert(card, 1);
+                    }
 
-                acc
-            });
+                    cards.push(card);
+
+                    (cards, map)
+                },
+            );
 
             let max: usize = map
                 .iter()
