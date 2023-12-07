@@ -41,18 +41,17 @@ fn part1(input: &str) -> usize {
 
     seeds
         .map(|seed| {
-            let mut current = seed;
-            for map in maps.iter() {
-                for instruction in map {
-                    if current >= instruction.start
-                        && current < instruction.start + instruction.length
-                    {
-                        current = instruction.offset + (current - instruction.start);
-                        break;
-                    }
+            maps.iter().fold(seed, |acc, map| {
+                let instruction = map.iter().find(|instruction| {
+                    acc >= instruction.start && acc < instruction.start + instruction.length
+                });
+
+                if let Some(instruction) = instruction {
+                    instruction.offset + (acc - instruction.start)
+                } else {
+                    acc
                 }
-            }
-            current
+            })
         })
         .min()
         .unwrap()
@@ -97,12 +96,15 @@ fn part2(input: &str) -> usize {
         .par_bridge()
         .map(|seed| {
             maps.iter().fold(seed, |acc, map| {
-                for instruction in map {
-                    if acc >= instruction.start && acc < instruction.start + instruction.length {
-                        return instruction.offset + (acc - instruction.start);
-                    }
+                let instruction = map.iter().find(|instruction| {
+                    acc >= instruction.start && acc < instruction.start + instruction.length
+                });
+
+                if let Some(instruction) = instruction {
+                    instruction.offset + (acc - instruction.start)
+                } else {
+                    acc
                 }
-                acc
             })
         })
         .min()
