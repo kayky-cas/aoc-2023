@@ -18,11 +18,11 @@ fn main() {
 
     let contents = format!(
         r#"fn part1(input: &str) -> () {{
-    unimplemented!()
+    unimplemented!("Input: {{}}", input)
 }}
 
 fn part2(input: &str) -> () {{
-    unimplemented!()
+    unimplemented!("Input: {{}}", input)
 }}
 
 fn main() {{
