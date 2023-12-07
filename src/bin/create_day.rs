@@ -17,12 +17,10 @@ fn main() {
     let path = format!("src/bin/day{:02}.rs", day);
 
     let contents = format!(
-        r#"fn part1(input: &str) -> () {{
-    unimplemented!("{{}}", input)
+        r#"fn part1(_input: &str) -> () {{
 }}
 
-fn part2(input: &str) -> () {{
-    unimplemented!("{{}}", input)
+fn part2(_input: &str) -> () {{
 }}
 
 fn main() {{
