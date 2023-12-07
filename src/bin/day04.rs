@@ -6,7 +6,7 @@ fn part1(input: &str) -> usize {
             let (winnings, my_cards) = cards
                 .split_once('|')
                 .map(|(winnings, my_cards)| (winnings.trim(), my_cards.trim()))
-                .and_then(|(winnings, my_cards)| {
+                .map(|(winnings, my_cards)| {
                     let winnings: Vec<usize> =
                         winnings.split(' ').filter_map(|x| x.parse().ok()).collect();
 
@@ -15,14 +15,14 @@ fn part1(input: &str) -> usize {
 
                     my_cards.sort();
 
-                    Some((winnings, my_cards))
+                    (winnings, my_cards)
                 })
                 .unwrap();
 
             let mut points = 0;
 
             for winning in winnings {
-                if let Ok(_) = my_cards.binary_search(&winning) {
+                if my_cards.binary_search(&winning).is_ok() {
                     if points == 0 {
                         points += 1;
                     } else {
@@ -31,7 +31,7 @@ fn part1(input: &str) -> usize {
                 }
             }
 
-            return points;
+            points
         })
         .sum()
 }
@@ -44,7 +44,7 @@ fn part2(input: &str) -> usize {
             let (winnings, my_cards) = cards
                 .split_once('|')
                 .map(|(winnings, my_cards)| (winnings.trim(), my_cards.trim()))
-                .and_then(|(winnings, my_cards)| {
+                .map(|(winnings, my_cards)| {
                     let winnings: Vec<usize> =
                         winnings.split(' ').filter_map(|x| x.parse().ok()).collect();
 
@@ -53,7 +53,7 @@ fn part2(input: &str) -> usize {
 
                     my_cards.sort();
 
-                    Some((winnings, my_cards))
+                    (winnings, my_cards)
                 })
                 .unwrap();
 
@@ -71,7 +71,7 @@ fn part2(input: &str) -> usize {
                 }
             }
 
-            return points;
+            points
         })
         .collect();
 

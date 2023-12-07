@@ -7,7 +7,7 @@ fn part1(input: &str) -> usize {
         .filter(|(_, s)| {
             let (_, content) = s.trim().split_once(':').unwrap();
 
-            for play in content.split(",").flat_map(|s| s.split(";")) {
+            for play in content.split(',').flat_map(|s| s.split(';')) {
                 let (quant, color) = play.trim_start().split_once(' ').unwrap();
 
                 let color = match color {
@@ -36,7 +36,7 @@ fn part2(input: &str) -> usize {
 
             let mut bag = [0, 0, 0];
 
-            for play in content.split(",").flat_map(|s| s.split(";")) {
+            for play in content.split(',').flat_map(|s| s.split(';')) {
                 let (quant, color) = play.trim_start().split_once(' ').unwrap();
 
                 let color = match color {

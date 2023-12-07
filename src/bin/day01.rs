@@ -2,8 +2,8 @@ fn part1(input: &str) -> usize {
     input
         .lines()
         .map(|line| {
-            let first = line.chars().find(|c| c.is_digit(10)).unwrap();
-            let last = line.chars().rev().find(|c| c.is_digit(10)).unwrap();
+            let first = line.chars().find(|c| c.is_ascii_digit()).unwrap();
+            let last = line.chars().rev().find(|c| c.is_ascii_digit()).unwrap();
 
             let mut number = String::from(first);
             number.push(last);
@@ -18,18 +18,14 @@ fn part2_handle(sl: &str, table: &[&str]) -> Option<char> {
         6.. => None,
         1 => {
             let ch = sl.chars().next().unwrap();
-            if ch.is_digit(10) {
+            if ch.is_ascii_digit() {
                 Some(ch)
             } else {
                 None
             }
         }
         _ => {
-            if let Some(pos) = table.iter().position(|&x| x == sl) {
-                Some(char::from_digit((pos + 1) as u32, 10).unwrap())
-            } else {
-                None
-            }
+            table.iter().position(|&x| x == sl).map(|pos| char::from_digit((pos + 1) as u32, 10).unwrap())
         }
     }
 }

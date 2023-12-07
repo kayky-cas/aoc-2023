@@ -16,10 +16,8 @@ fn part1(input: &str) -> usize {
                 } else {
                     numbers[count].0.push(ch);
                 }
-            } else {
-                if count != numbers.len() {
-                    count += 1;
-                }
+            } else if count != numbers.len() {
+                count += 1;
             }
         }
     }
@@ -43,7 +41,7 @@ fn part1(input: &str) -> usize {
                 }
             }
 
-            return None::<usize>;
+            None::<usize>
         })
         .sum()
 }
@@ -89,10 +87,8 @@ fn part2(input: &str) -> usize {
                     continue;
                 }
                 let ch = schematic[i][j];
-                if !ch.is_ascii_digit() && ch != '.' {
-                    if ch == '*' {
-                        mult.get_mut(&(j, i)).unwrap().push(num.0.parse().unwrap())
-                    }
+                if !ch.is_ascii_digit() && ch != '.' && ch == '*' {
+                    mult.get_mut(&(j, i)).unwrap().push(num.0.parse().unwrap())
                 }
             }
         }
