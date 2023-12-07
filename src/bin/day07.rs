@@ -1,5 +1,16 @@
 use std::{cmp::Ordering, collections::HashMap};
 
+struct Game {
+    hand: Vec<char>,
+    bid: usize,
+    stats: Stats,
+}
+
+struct Stats {
+    max: usize,
+    len: usize,
+}
+
 fn part1(input: &str) -> usize {
     let points = [
         'A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2',
@@ -11,45 +22,42 @@ fn part1(input: &str) -> usize {
             let (hand, bid) = line.trim().split_once(' ').unwrap();
             let bid: usize = bid.parse().unwrap();
             let cards: Vec<char> = hand.chars().collect();
-            (cards, bid)
+
+            let map = hand.chars().fold(HashMap::new(), |mut acc, card| {
+                if let Some(count) = acc.get(&card) {
+                    acc.insert(card, count + 1);
+                } else {
+                    acc.insert(card, 1);
+                }
+
+                acc
+            });
+
+            let max = map.values().max().unwrap_or(&0);
+            let len = map.len();
+
+            let stats = Stats { max: *max, len };
+
+            Game {
+                hand: cards,
+                bid,
+                stats,
+            }
         })
         .collect();
 
     game.sort_by(|a, b| {
-        let a_map = a.0.iter().copied().fold(HashMap::new(), |mut acc, card| {
-            if let Some(count) = acc.get(&card) {
-                acc.insert(card, count + 1);
-            } else {
-                acc.insert(card, 1);
-            }
-
-            acc
-        });
-
-        let b_map = b.0.iter().copied().fold(HashMap::new(), |mut acc, card| {
-            if let Some(count) = acc.get(&card) {
-                acc.insert(card, count + 1);
-            } else {
-                acc.insert(card, 1);
-            }
-
-            acc
-        });
-
-        let max_a = a_map.values().max();
-        let max_b = b_map.values().max();
-
-        match max_a.cmp(&max_b) {
+        match a.stats.max.cmp(&b.stats.max) {
             Ordering::Equal => {}
             ord => return ord,
         };
 
-        match b_map.len().cmp(&a_map.len()) {
+        match b.stats.len.cmp(&a.stats.len) {
             Ordering::Equal => {}
             ord => return ord,
         };
 
-        for (card_a, card_b) in a.0.iter().zip(b.0.iter()) {
+        for (card_a, card_b) in a.hand.iter().zip(b.hand.iter()) {
             let a = points.iter().position(|card| *card == *card_a);
             let b = points.iter().position(|card| *card == *card_b);
 
@@ -64,7 +72,7 @@ fn part1(input: &str) -> usize {
 
     game.iter()
         .enumerate()
-        .map(|(idx, (_, bid))| (idx + 1) * bid)
+        .map(|(idx, game)| (idx + 1) * game.bid)
         .sum()
 }
 
@@ -79,61 +87,49 @@ fn part2(input: &str) -> usize {
             let (hand, bid) = line.trim().split_once(' ').unwrap();
             let bid: usize = bid.parse().unwrap();
             let cards: Vec<char> = hand.chars().collect();
-            (cards, bid)
+
+            let map = hand.chars().fold(HashMap::new(), |mut acc, card| {
+                if let Some(count) = acc.get(&card) {
+                    acc.insert(card, count + 1);
+                } else {
+                    acc.insert(card, 1);
+                }
+
+                acc
+            });
+
+            let max: usize = map
+                .iter()
+                .filter(|(&card, _)| card != 'J')
+                .map(|(_, c)| c)
+                .max()
+                .unwrap_or(&0)
+                + *map.get(&'J').unwrap_or(&0);
+
+            let len = map.iter().filter(|(&card, _)| card != 'J').count().max(1);
+
+            let stats = Stats { max, len };
+
+            Game {
+                hand: cards,
+                bid,
+                stats,
+            }
         })
         .collect();
 
     game.sort_by(|a, b| {
-        let a_map = a.0.iter().copied().fold(HashMap::new(), |mut acc, card| {
-            if let Some(count) = acc.get(&card) {
-                acc.insert(card, count + 1);
-            } else {
-                acc.insert(card, 1);
-            }
-
-            acc
-        });
-
-        let b_map = b.0.iter().copied().fold(HashMap::new(), |mut acc, card| {
-            if let Some(count) = acc.get(&card) {
-                acc.insert(card, count + 1);
-            } else {
-                acc.insert(card, 1);
-            }
-
-            acc
-        });
-
-        let max_a: usize = a_map
-            .iter()
-            .filter(|(&card, _)| card != 'J')
-            .map(|(_, c)| c)
-            .max()
-            .unwrap_or(&0)
-            + *a_map.get(&'J').unwrap_or(&0);
-
-        let max_b: usize = b_map
-            .iter()
-            .filter(|(&card, _)| card != 'J')
-            .map(|(_, c)| c)
-            .max()
-            .unwrap_or(&0)
-            + *b_map.get(&'J').unwrap_or(&0);
-
-        match max_a.cmp(&max_b) {
+        match a.stats.max.cmp(&b.stats.max) {
             Ordering::Equal => {}
             ord => return ord,
         };
 
-        let a_len = a_map.iter().filter(|(&card, _)| card != 'J').count().max(1);
-        let b_len = b_map.iter().filter(|(&card, _)| card != 'J').count().max(1);
-
-        match b_len.cmp(&a_len) {
+        match b.stats.len.cmp(&a.stats.len) {
             Ordering::Equal => {}
             ord => return ord,
         };
 
-        for (card_a, card_b) in a.0.iter().zip(b.0.iter()) {
+        for (card_a, card_b) in a.hand.iter().zip(b.hand.iter()) {
             let a = points.iter().position(|card| *card == *card_a);
             let b = points.iter().position(|card| *card == *card_b);
 
@@ -148,7 +144,7 @@ fn part2(input: &str) -> usize {
 
     game.iter()
         .enumerate()
-        .map(|(idx, (_, bid))| (idx + 1) * bid)
+        .map(|(idx, game)| (idx + 1) * game.bid)
         .sum()
 }
 
