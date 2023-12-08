@@ -107,11 +107,10 @@ fn min_mult_com(nums: &[usize]) -> usize {
 }
 
 fn max_div_com(a: usize, b: usize) -> usize {
-    if b == 0 {
-        return a;
+    match b {
+        0 => a,
+        _ => max_div_com(b, a % b),
     }
-
-    max_div_com(b, a % b)
 }
 
 fn main() {
