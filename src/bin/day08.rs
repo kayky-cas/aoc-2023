@@ -23,29 +23,22 @@ fn part1(input: &str) -> usize {
 
     instructions
         .take_while(|instruction| {
-            match instruction {
-                'L' => {
-                    if left == "ZZZ" {
-                        return false;
-                    }
-
-                    let (l, r) = map.get(left).unwrap();
-                    left = l;
-                    right = r;
-                }
-                'R' => {
-                    if right == "ZZZ" {
-                        return false;
-                    }
-
-                    let (l, r) = map.get(right).unwrap();
-                    left = l;
-                    right = r;
-                }
+            let side = match instruction {
+                'L' => left,
+                'R' => right,
                 _ => unreachable!(),
             };
 
-            true
+            if side == "ZZZ" {
+                false
+            } else {
+                let (l, r) = map.get(side).unwrap();
+
+                left = l;
+                right = r;
+
+                true
+            }
         })
         .count()
         + 1
@@ -79,8 +72,7 @@ fn part2(input: &str) -> usize {
             instructions
                 .iter()
                 .cycle()
-                .enumerate()
-                .find(|(_, instruction)| {
+                .take_while(|instruction| {
                     let (left, right) = map.get(node).unwrap();
 
                     let side = match instruction {
@@ -89,41 +81,37 @@ fn part2(input: &str) -> usize {
                         _ => unreachable!(),
                     };
 
-                    if side.ends_with("Z") {
-                        true
-                    } else {
-                        node = side;
-                        false
-                    }
+                    node = side;
+
+                    !side.ends_with("Z")
                 })
-                .unwrap()
-                .0
+                .count()
                 + 1
         })
         .collect();
 
-    mmc(&paths)
+    min_mult_com(&paths)
 }
 
-fn mmc(nums: &[usize]) -> usize {
+fn min_mult_com(nums: &[usize]) -> usize {
     match nums.len() {
         0 => 0,
         1 => nums[0],
         _ => {
             let a = nums[0];
-            let b = mmc(&nums[1..]);
+            let b = min_mult_com(&nums[1..]);
 
-            a * b / mdc(a, b)
+            a * b / max_div_com(a, b)
         }
     }
 }
 
-fn mdc(a: usize, b: usize) -> usize {
+fn max_div_com(a: usize, b: usize) -> usize {
     if b == 0 {
         return a;
     }
 
-    mdc(b, a % b)
+    max_div_com(b, a % b)
 }
 
 fn main() {
