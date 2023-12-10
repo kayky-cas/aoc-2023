@@ -1,9 +1,8 @@
-use rayon::prelude::*;
+use std::ops::Range;
 
 #[derive(Debug)]
 struct Instruction {
-    start: usize,
-    length: usize,
+    range: Range<usize>,
     offset: usize,
 }
 
@@ -30,8 +29,7 @@ fn part1(input: &str) -> usize {
                     let offset = offset.parse::<usize>().unwrap();
 
                     Instruction {
-                        start,
-                        length,
+                        range: start..start + length,
                         offset,
                     }
                 })
@@ -42,12 +40,12 @@ fn part1(input: &str) -> usize {
     seeds
         .map(|seed| {
             maps.iter().fold(seed, |acc, map| {
-                let instruction = map.iter().find(|instruction| {
-                    acc >= instruction.start && acc < instruction.start + instruction.length
-                });
+                let instruction = map
+                    .iter()
+                    .find(|instruction| instruction.range.contains(&acc));
 
                 if let Some(instruction) = instruction {
-                    instruction.offset + (acc - instruction.start)
+                    instruction.offset + (acc - instruction.range.start)
                 } else {
                     acc
                 }
@@ -81,8 +79,7 @@ fn part2(input: &str) -> usize {
                     let offset = offset.parse::<usize>().unwrap();
 
                     Instruction {
-                        start,
-                        length,
+                        range: start..start + length,
                         offset,
                     }
                 })
@@ -90,25 +87,51 @@ fn part2(input: &str) -> usize {
         })
         .collect();
 
-    seeds
+    let mut ranges: Vec<(Range<usize>, usize)> = seeds
         .chunks(2)
-        .flat_map(|chunk| chunk[0]..(chunk[0] + chunk[1]))
-        .par_bridge()
-        .map(|seed| {
-            maps.iter().fold(seed, |acc, map| {
+        .map(|chunk| (chunk[0]..(chunk[0] + chunk[1]), 0))
+        .collect();
+
+    let mut mins = vec![];
+
+    while let Some((range, map_idx)) = ranges.pop() {
+        let range = maps
+            .iter()
+            .enumerate()
+            .skip(map_idx)
+            .fold(range, |mut acc, (idx, map)| {
                 let instruction = map.iter().find(|instruction| {
-                    acc >= instruction.start && acc < instruction.start + instruction.length
+                    (acc.start >= instruction.range.start && acc.start < instruction.range.end)
+                        || (acc.end <= instruction.range.end && acc.end > instruction.range.start)
                 });
 
                 if let Some(instruction) = instruction {
-                    instruction.offset + (acc - instruction.start)
+                    if acc.start < instruction.range.start {
+                        let new_range = acc.start..instruction.range.start;
+                        ranges.push((new_range, idx));
+
+                        acc.start = instruction.range.start;
+                    } else if acc.end > instruction.range.end {
+                        let new_range = instruction.range.end..acc.end;
+                        ranges.push((new_range, idx));
+
+                        acc.end = instruction.range.end;
+                    }
+
+                    let offset = acc.end - acc.start;
+
+                    let start = acc.start - instruction.range.start + instruction.offset;
+
+                    start..offset + start
                 } else {
                     acc
                 }
-            })
-        })
-        .min()
-        .unwrap()
+            });
+
+        mins.push(range.start);
+    }
+
+    *mins.iter().min().unwrap()
 }
 
 fn main() {
