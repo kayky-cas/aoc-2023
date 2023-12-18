@@ -1,4 +1,4 @@
-use std::collections::VecDeque;
+use std::collections::{HashSet, VecDeque};
 
 #[derive(Eq, PartialEq, Clone, Debug)]
 enum Direction {
@@ -220,14 +220,14 @@ fn part2(input: &str) -> usize {
         }
     }
 
-    let mut pipe_loop = vec![];
+    let mut pipe_loop = HashSet::new();
     let mut queue: VecDeque<_> = vec![start].into();
     while let Some(pipe) = queue.pop_front() {
         if pipe_loop.contains(&pipe) {
             continue;
         }
 
-        pipe_loop.push(pipe);
+        pipe_loop.insert(pipe);
 
         let distance = if let Some(distance) = grid[pipe.1][pipe.0].distance {
             distance + 1
@@ -289,36 +289,20 @@ fn part2(input: &str) -> usize {
         }
     }
 
-    let mut inside = 0;
-
-    for row in grid.iter() {
-        for pipe in row.iter() {
-            if pipe_loop
-                .iter()
-                .find(|p| p.0 == pipe.x && p.1 == pipe.y)
-                .is_none()
-            {
-                let mut count = 0;
-
-                for i in 0..pipe.x {
-                    if pipe_loop
-                        .iter()
-                        .find(|p| p.0 == i && p.1 == pipe.y)
-                        .is_some()
-                        && matches!(row[i].ch, 'L' | 'J' | '|')
-                    {
-                        count += 1;
-                    }
-                }
-
-                if count % 2 == 1 {
-                    inside += 1;
-                }
-            }
-        }
-    }
-
-    inside
+    grid.iter()
+        .flat_map(|row| row.iter())
+        .filter(|pipe| {
+            !pipe_loop.contains(&(pipe.x, pipe.y))
+                && (0..pipe.x)
+                    .filter(|&x| {
+                        pipe_loop.contains(&(x, pipe.y))
+                            && grid[pipe.y][x].directions.contains(&Direction::Up)
+                    })
+                    .count()
+                    % 2
+                    == 1
+        })
+        .count()
 }
 
 fn main() {
